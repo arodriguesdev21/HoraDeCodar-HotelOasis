@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <script>
+        // --- VARIÁVEIS GLOBAIS E ESTADO DO SISTEMA ---
+        var nomeHotel = "Oasis";
+        var senhaCorreta = "2678";
+        var nomeUsuario = "";
+        
+        // Estado para Relatórios
+        var quartos = Array(20).fill({ocupado: false, hospede: ""});
+        var totalHospedagens = 0;
+        var receitaTotal = 0;
+
+        function inicio() {
+            alert("Bem-vindo ao Hotel " + nomeHotel);
+            nomeUsuario = prompt("Por favor, informe seu nome:");
+
+            if (!nomeUsuario) {
+                alert("Nome inválido. O sistema será reiniciado.");
+                return inicio();
+            }
+
+            if (autenticar()) {
+                alert("Bem-vindo ao Hotel " + nomeHotel + ", " + nomeUsuario + ". É um prazer ter você por aqui!");
+                menuPrincipal();
+            }
+        }
+
+        function autenticar() {
+
+            let tentativas = 3;
+            while (tentativas > 0) {
+                let senha = prompt("Digite sua senha:");
+                if (senha === senhaCorreta) return true;
+                
+                tentativas--;
+                if (tentativas > 0) {
+                    alert("Senha incorreta. Você possui mais " + tentativas + " tentativa(s).");
+                }
+            }
+            alert("Número de tentativas excedido. O sistema foi bloqueado.");
+            return false;
+        }
+
+        function menuPrincipal() {
+            var escolha = parseInt(prompt(
+                "Hotel " + nomeHotel + " - Menu Principal\n" +
+                "Olá " + nomeUsuario + ", escolha uma opção:\n" +
+                "1.) Reservas de Quartos\n" +
+                "2.) Cadastro de Hóspedes\n" +
+                "3.) Eventos\n" +
+                "4.) Ar-Condicionado\n" +
+                "5.) Abastecimento\n" +
+                "6.) Relatórios Operacionais\n" +
+                "7.) Sair"
+            ));
+
+            switch (escolha) {
+                case 1: reserva_quartos(); break;
+                case 2: window.location.href = "cadastrodehospedes.html"; break; 
+                case 3: eventos(); break;
+                case 4: ar_condicionado(); break;
+                case 5: abastecer_carros(); break;
+                case 6: relatorios_operacionais(); break;
+                case 7: sair(); break;
+                default:
+                    alert("Opção inválida. Por favor, escolha um número de 1 a 7.");
+                    menuPrincipal();
+                    break;
+            }
+        }
+
+        // --- SUBPROGRAMA 1: RESERVAS ---
+        function reserva_quartos() {
+            let valorDiaria = parseFloat(prompt("Informe o valor da diária:"));
+            let qtdDias = parseInt(prompt("Informe a quantidade de diárias (1-30):"));
+
+            if (valorDiaria <= 0 || qtdDias <= 0 || qtdDias > 30 || isNaN(valorDiaria) || isNaN(qtdDias)) {
+                alert("Valor inválido, " + nomeUsuario);
+                return menuPrincipal();
+            }
+
+            let nomeHospede = prompt("Informe o nome do hóspede:");
+            let tipoQuarto = prompt("Tipo de quarto (S - Standard / E - Executivo / L - Luxo):").toUpperCase();
+            
+            let fator = 1.0;
+            if (tipoQuarto === 'E') fator = 1.35;
+            if (tipoQuarto === 'L') fator = 1.65;
+
+            let numQuarto = parseInt(prompt("Escolha um quarto (1-20):")) - 1;
+
+            if (numQuarto < 0 || numQuarto > 19 || quartos[numQuarto].ocupado) {
+                alert("Quarto inválido ou já ocupado.");
+                return reserva_quartos();
+            }
+
+            let subtotal = valorDiaria * qtdDias * fator;
+            let taxa = subtotal * 0.10;
+            let total = subtotal + taxa;
+
+            let confirma = confirm(
+                "Resumo da Reserva:\n" +
+                "Hóspede: " + nomeHospede + "\n" +
+                "Quarto: " + (numQuarto + 1) + "\n" +
+                "Total: R$ " + total.toFixed(2) + "\n\n" +
+                "Confirma a reserva?"
+            );
+
+            if (confirma) {
+                quartos[numQuarto] = { ocupado: true, hospede: nomeHospede };
+                totalHospedagens++;
+                receitaTotal += total;
+                alert("Reserva efetuada com sucesso!");
+                exibirMapaQuartos();
+            } else {
+                alert("Reserva não efetuada.");
+            }
+            menuPrincipal();
+        }
+
+        function exibirMapaQuartos() {
+            let mapa = "Mapa de Ocupação:\n";
+            for (let i = 0; i < 20; i++) {
+                mapa += (quartos[i].ocupado ? "[O]" : "[L]") + " ";
+                if ((i + 1) % 5 === 0) mapa += "\n";
+            }
+            alert(mapa);
+        }
+
+        // Stubs para os próximos subprogramas
+        function eventos() { alert("Módulo Eventos em desenvolvimento."); menuPrincipal(); }
+        function ar_condicionado() { alert("Módulo Ar-Condicionado em desenvolvimento."); menuPrincipal(); }
+        function abastecer_carros() { alert("Módulo Abastecimento em desenvolvimento."); menuPrincipal(); }
+        function relatorios_operacionais() { 
+            let ocupados = quartos.filter(q => q.ocupado).length;
+            alert(
+                "RELATÓRIO OPERACIONAL\n" +
+                "Reservas Confirmadas: " + totalHospedagens + "\n" +
+                "Taxa de Ocupação: " + ((ocupados/20)*100).toFixed(1) + "%\n" +
+                "Receita Total: R$ " + receitaTotal.toFixed(2)
+            );
+            menuPrincipal(); 
+        }
+
+        function sair() {
+            alert("Muito obrigado e até logo, " + nomeUsuario);
+            window.close();
+        }
+
+        window.onload = inicio;
+    </script>
+</head>
+<body>
+
+</body>
+</html>

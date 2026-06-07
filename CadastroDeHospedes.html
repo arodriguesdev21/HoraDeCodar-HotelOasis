@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <script>
+        var lista_hospedes = [];
+
+        function menu_cadastro() {
+            var escolha = parseInt(prompt(
+                "[Cadastro de Hóspedes]\n" +
+                "1-Cadastrar\n" +
+                "2-Pesquisar exato\n" +
+                "3-Pesquisar prefixo\n" +
+                "4-Listar\n" +
+                "5-Atualizar\n" +
+                "6-Remover\n" +
+                "7-Voltar"
+            ));
+
+            switch (escolha) {
+                case 1: cadastrar(); break;
+                case 2: pesquisarExato(); break;
+                case 3: pesquisarPrefixo(); break;
+                case 4: listar(); break;
+                case 5: atualizar(); break;
+                case 6: remover(); break;
+                case 7: window.location.href = "hotel.html"; break;
+                default:
+                    alert("Opção inválida.");
+                    menu_cadastro();
+            }
+        }
+
+        function cadastrar() {
+            if (lista_hospedes.length >= 15) {
+                alert("Máximo de cadastros atingido");
+                return menu_cadastro();
+            }
+
+            let nome = prompt("Nome do hóspede:");
+            if (lista_hospedes.some(h => h.nome === nome)) {
+                alert("Hóspede já cadastrado");
+            } else {
+                lista_hospedes.push({
+                    nome: nome,
+                    data: new Date().toLocaleString()
+                });
+                alert("Operação realizada com sucesso!");
+            }
+            menu_cadastro();
+        }
+
+        function pesquisarExato() {
+            let busca = prompt("Nome exato para pesquisa:");
+            let encontrado = lista_hospedes.find(h => h.nome === busca);
+            alert(encontrado ? "Hóspede " + busca + " foi encontrado" : "Hóspede não encontrado");
+            menu_cadastro();
+        }
+
+        function pesquisarPrefixo() {
+            let pref = prompt("Digite o início do nome (prefixo):").toLowerCase();
+            let resultados = lista_hospedes.filter(h => h.nome.toLowerCase().startsWith(pref));
+            
+            if (resultados.length > 0) {
+                let msg = "Resultados:\n";
+                resultados.forEach((h, i) => msg += "[" + i + "] " + h.nome + "\n");
+                alert(msg);
+            } else {
+                alert("Nenhum hóspede encontrado com esse prefixo.");
+            }
+            menu_cadastro();
+        }
+
+        function listar() {
+            if (lista_hospedes.length === 0) {
+                alert("Lista vazia.");
+            } else {
+                // Ordenar A-Z
+                let listaOrdenada = [...lista_hospedes].sort((a, b) => a.nome.localeCompare(b.nome));
+                let msg = "Hóspedes Cadastrados (A-Z):\n";
+                listaOrdenada.forEach((h, i) => {
+                    msg += i + " - " + h.nome + " (Cadastrado em: " + h.data + ")\n";
+                });
+                alert(msg);
+            }
+            menu_cadastro();
+        }
+
+        function atualizar() {
+            let idx = parseInt(prompt("Informe o índice para atualizar:"));
+            if (lista_hospedes[idx]) {
+                let novoNome = prompt("Novo nome para " + lista_hospedes[idx].nome + ":");
+                lista_hospedes[idx].nome = novoNome;
+                alert("Operação realizada com sucesso!");
+            } else {
+                alert("Índice inválido.");
+            }
+            menu_cadastro();
+        }
+
+        function remover() {
+            let idx = parseInt(prompt("Informe o índice para remover:"));
+            if (lista_hospedes[idx]) {
+                lista_hospedes.splice(idx, 1);
+                alert("Operação realizada com sucesso!");
+            } else {
+                alert("Índice inválido.");
+            }
+            menu_cadastro();
+        }
+
+        window.onload = menu_cadastro;
+    </script>
+</head>
+<body>
+    <h1>Módulo de Cadastro de Hóspedes</h1>
+</body>
+</html>
